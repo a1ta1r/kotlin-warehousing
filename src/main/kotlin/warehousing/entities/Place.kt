@@ -12,7 +12,5 @@ class Place(id: EntityID<Int>) : IntEntity(id) {
     var label by PlaceTable.label
     var description by PlaceTable.description
 
-    var placeType by PlaceType referencedOn PlaceTable.placeType
-
     val items by ItemInPlace referrersOn PlaceItemTable.place
 }

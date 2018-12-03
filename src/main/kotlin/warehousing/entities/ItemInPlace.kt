@@ -11,5 +11,4 @@ class ItemInPlace(id: EntityID<Int>) : IntEntity(id) {
     var item by Item referencedOn PlaceItemTable.item
     var place by Place referencedOn PlaceItemTable.place
     var quantity by PlaceItemTable.quantity
-    var pricePerUnit by PlaceItemTable.pricePerUnit
 }

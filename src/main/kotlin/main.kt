@@ -1,76 +1,42 @@
-import io.ktor.application.call
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import warehousing.entities.Category
-import warehousing.entities.Item
-import warehousing.entities.ItemCategories
+import warehousing.repositories.PlainRecordRepository
+import warehousing.services.SqliteTransformer
+import warehousing.services.XLSXWriter
 import warehousing.tables.*
 
 fun main(args: Array<String>) {
-    DbConnection.db
-    transaction {
+
+    val sqliteRepo = PlainRecordRepository(DbConnection.sqlite)
+    val records = sqliteRepo.getPlainRecords()
+    transaction(DbConnection.db) {
         SchemaUtils.create(
-                PlaceTypeTable,
-                PlaceTable,
                 ItemTable,
                 CategoryTable,
                 ItemCategoryTable,
+                PlaceTable,
                 PlaceItemTable,
                 TransferPathTable,
-                TransferTable,
-                SaleTable
+                ItemTransferTable
         )
-        Category.new {
-            label = "Toys"
-            description = "good toys"
-        }
-        Category.new {
-            label = "Food"
-            description = "good food"
-        }
-        Category.new {
-            label = "Misc"
-            description = "good misc."
-        }
-        Item.new {
-            label = "soldier"
-            description = "has a rifle"
-        }
-        Item.new {
-            label = "soldier 2"
-            description = "has a pistol"
-        }
-        Item.new {
-            label = "soldier 3"
-            description = "has one arm"
-        }
-        ItemCategories.new {
-            item = Item[1]
-            category = Category[1]
-        }
-        ItemCategories.new {
-            item = Item[1]
-            category = Category[3]
+
+    }
+    transaction(DbConnection.db) {
+        addLogger(StdOutSqlLogger)
+        addLogger(Slf4jSqlDebugLogger)
+        ItemTransferTable.deleteAll()
+        TransferPathTable.deleteAll()
+        PlaceItemTable.deleteAll()
+        PlaceTable.deleteAll()
+        ItemCategoryTable.deleteAll()
+        CategoryTable.deleteAll()
+        ItemTable.deleteAll()
+        SqliteTransformer().transformPlainRecordsToEntities(records).forEach {
+            println("TRANSFER ERROR: $it")
         }
     }
-    embeddedServer(Netty, 8080) {
-        routing {
-            get("/") {
-                call.respondText(transaction {
-                    addLogger(StdOutSqlLogger)
-                    var str = ""
-                    Item[1].categories.forEach {str += it.category.label + "\n" }
-                    str
-                })
 
-            }
-        }
-    }.start(true)
+    XLSXWriter(DbConnection.db).fillXLSX()
 
 
 }

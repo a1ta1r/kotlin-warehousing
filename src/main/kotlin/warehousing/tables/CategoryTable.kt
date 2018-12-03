@@ -1,6 +1,8 @@
 package warehousing.tables
 
-object CategoryTable: AbstractTable() {
-    val label = varchar("label", 64).index()
+import org.jetbrains.exposed.dao.IntIdTable
+
+object CategoryTable : IntIdTable() {
+    val label = varchar("label", 64).uniqueIndex()
     val description = varchar("description", 255)
 }

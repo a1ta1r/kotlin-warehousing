@@ -1,8 +1,9 @@
 package warehousing.tables
 
-object PlaceItemTable: AbstractTable() {
+import org.jetbrains.exposed.dao.IntIdTable
+
+object PlaceItemTable : IntIdTable() {
     val place = reference("place", PlaceTable).index()
     val item = reference("item", ItemTable).index()
     val quantity = integer("quantity")
-    val pricePerUnit = integer("price_per_unit")
 }

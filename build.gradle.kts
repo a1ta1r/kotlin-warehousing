@@ -10,14 +10,14 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = uri("http://kotlin.bintray.com/ktor") }
 }
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile("org.jetbrains.exposed:exposed:0.11.2")
     compile("mysql:mysql-connector-java:5.1.46")
-    compile("io.ktor:ktor-server-netty:1.0.0-beta-3")
+    compile("org.xerial:sqlite-jdbc:3.21.0.1")
+    compile("org.apache.poi:poi-ooxml:3.17")
 }
 
 tasks.withType<KotlinCompile> {
