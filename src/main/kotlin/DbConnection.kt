@@ -9,7 +9,7 @@ object DbConnection {
     }
 
     val sqlite by lazy {
-        val db = Database.connect("jdbc:sqlite:D:\\\\sqlite\\warehousing", "org.sqlite.JDBC")
+        val db = Database.connect("jdbc:sqlite:sqlite\\warehousing.db", "org.sqlite.JDBC")
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
         db
     }
